@@ -1,0 +1,64 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment files
+.env
+*.env
+*.venv
+
+# IDE and editor-specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Cache files
+*.cache
+
+# Unit test and coverage reports
+htmlcov/
+*.coverage
+.coverage.*
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Other ignored files
+*.bak
+*.swp
+*.old
+*.orig
+
+# Ignore the src/ directory if you don't want to track its contents
+# src/
+
+# Optional: Uncomment if you have specific files or directories to ignore
+# /src/PySpectrometer2-Picam2-v1.0.py
+# /src/specFunctions.py
+# OS-specific files
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# macOS attribute files
+Icon?
+
