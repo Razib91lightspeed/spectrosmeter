@@ -32,6 +32,7 @@ from specFunctions import wavelength_to_rgb,savitzky_golay,peakIndexes,readcal,w
 import base64
 import argparse
 from picamera2 import Picamera2
+import libcamera
 
 parser = argparse.ArgumentParser()
 group = parser.add_mutually_exclusive_group()
@@ -134,6 +135,7 @@ waterfall = np.zeros([320,frameWidth,3],dtype=np.uint8)
 waterfall.fill(0) #fill black
 
 #Go grab the computed calibration data
+frameWidth = 800 
 caldata = readcal(frameWidth)
 wavelengthData = caldata[0]
 calmsg1 = caldata[1]
@@ -194,14 +196,20 @@ while True:
 
 	#Display a graticule calibrated with cal data
 	textoffset = 12
+	# Define step before the loop
+	low = int(round(min(wavelengthData)))  
+	high = int(round(max(wavelengthData)))
+	step = max(1, len(wavelengthData) // (high - low + 1))
 	#vertial lines every whole 10nm
-	for position in tens:
-		cv2.line(graph,(position,15),(position,320),(200,200,200),1)
+	for i in range(0, len(wavelengthData), step * 5): 
+		cv2.line(graph, (i,15), (i, 320), (200, 200, 200), 1)
 
 	#vertical lines every whole 50nm
 	for positiondata in fifties:
-		cv2.line(graph,(positiondata[0],15),(positiondata[0],320),(0,0,0),1)
-		cv2.putText(graph,str(positiondata[1])+'nm',(positiondata[0]-textoffset,12),font,0.4,(0,0,0),1, cv2.LINE_AA)
+		if positiondata[1] % 50 == 0:
+			cv2.line(graph, (positiondata[0], 15),(positiondata[0], 320), (0, 0, 0), 1)
+		cv2.putText(graph, str(positiondata[1])+ 'nm', (positiondata[0] - 10, 25),  
+				cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
 
 	#horizontal lines
 	for i in range (320):

@@ -135,8 +135,8 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
 	order_range = range(order+1)
 	half_window = (window_size -1) // 2
 	# precompute coefficients
-	b = np.mat([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
-	m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
+	b = np.array([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
+	m = np.linalg.pinv(b)[deriv] * rate**deriv * factorial(deriv)
 	# pad the signal at the extremes with
 	# values taken from the signal itself
 	firstvals = y[0] - np.abs( y[1:half_window+1][::-1] - y[0] )
@@ -284,7 +284,13 @@ def readcal(width):
 
 
 	#create an array for the data...
-	wavelengthData = []
+	#wavelengthData = np.linspace(900, 1700, num=frameWidth)
+def readcal(frameWidth):
+	errors = 0
+	wavelengthData = np.linspace(400, 1700, num=frameWidth)
+	pixels = [0, 400, 800]  # Example pixel data if file is missing
+	wavelengths = [900, 1300, 1700]  # Example wavelength data
+
 
 	if (len(pixels) == 3):
 		print("Calculating second order polynomial...")
@@ -294,10 +300,10 @@ def readcal(width):
 		C2 = coefficients[1]
 		C3 = coefficients[0]
 		print("Generating Wavelength Data!\n\n")
-		for pixel in range(width):
+		for pixel in range(frameWidth):
 			wavelength=((C1*pixel**2)+(C2*pixel)+C3)
 			wavelength = round(wavelength,6) #because seriously!
-			wavelengthData.append(wavelength)
+			wavelengthData=np.append(wavelengthData, wavelength)
 		print("Done! Note that calibration with only 3 wavelengths will not be accurate!")
 		if errors == 1:
 			message = 0 #return message zero(errors)
@@ -323,7 +329,7 @@ def readcal(width):
 		print(C4)
 		'''
 		print("Generating Wavelength Data!\n\n")
-		for pixel in range(width):		
+		for pixel in range(frameWidth):		
 			wavelength=((C1*pixel**3)+(C2*pixel**2)+(C3*pixel)+C4)
 			wavelength = round(wavelength,6)
 			wavelengthData.append(wavelength)
@@ -399,30 +405,36 @@ def writecal(clickArray):
 	return calcomplete
 
 def generateGraticule(wavelengthData):
-	low = wavelengthData[0] #get lowet number in list
-	high = wavelengthData[len(wavelengthData)-1] #get highest number
+	low = int(round(min(wavelengthData)))   #get lowet number in list
+	high = int(round(max(wavelengthData)))  #get highest number
+	step = max(1, len(wavelengthData) // (high - low + 1))  # Ensure full screen coverage
 	#round and int these numbers so we have our range of numbers to look at
 	#give a margin of 10 at each end for good measure
-	low = int(round(low))-10
-	high = int(round(high))+10
+	# low = wavelengthData[0]
+	# high = wavelengthData[len(wavelengthData)-1] #get highest number
+	# low = int(round(low))-10
+	# high = int(round(high))+10
 	#print('...')
 	#print(low)
 	#print(high)
 	#print('...')
 	returndata = []
 	#find positions of every whole 10nm
-	tens = []
-	for i in range(low,high):
-		if (i%10==0):
-			#position contains pixelnumber and wavelength
+	tens = [i for i in range(0, len(wavelengthData), step) if int(wavelengthData[i]) % 10 == 0]
+	returndata.append(tens)
+	fifties = []
+	for i in range(low, high):
+		if i % 50 == 0:
+			#fifties.append([i, int(wavelengthData[i])])
 			position = min(enumerate(wavelengthData), key=lambda x: abs(i - x[1]))
 			#If the difference between the target and result is <9 show the line
 			#(otherwise depending on the scale we get dozens of number either end that are close to the target)
 			if abs(i-position[1]) <1: 
-				#print(i)
+				fifties.append(position)
 				#print(position)
-				tens.append(position[0])
-	returndata.append(tens)
+				#tens.append(position[0])
+	returndata.append(fifties)
+	return returndata
 	fifties = []
 	for i in range(low,high):
 		if (i%50==0):
