@@ -1,28 +1,5 @@
 '''
-PySpectrometer2 Les Wright 2022
-https://www.youtube.com/leslaboratory
-https://github.com/leswright1977
 
-This project is a follow on from: https://github.com/leswright1977/PySpectrometer 
-
-This is a more advanced, but more flexible version of the original program. Tk Has been dropped as the GUI to allow fullscreen mode on Raspberry Pi systems and the iterface is designed to fit 800*480 screens, which seem to be a common resolutin for RPi LCD's, paving the way for the creation of a stand alone benchtop instrument.
-
-Whats new:
-Higher reolution (800px wide graph)
-3 row pixel averaging of sensor data
-Fullscreen option for the Spectrometer graph
-3rd order polymonial fit of calibration data for accurate measurement.
-Improved graph labelling
-Labelled measurement cursors
-Optional waterfall display for recording spectra changes over time.
-Key Bindings for all operations
-
-All old features have been kept, including peak hold, peak detect, Savitsky Golay filter, and the ability to save graphs as png and data as CSV.
-
-For instructions please consult the readme!
-
-Future work:
-It is planned to add in GPIO support, to allow the use of buttons and knobs to control the Spectrometer.
 '''
 
 
@@ -147,29 +124,7 @@ def savitzky_golay(y, window_size, order, deriv=0, rate=1):
 def peakIndexes(y, thres=0.3, min_dist=1, thres_abs=False):
 	#from peakutils
 	#from https://bitbucket.org/lucashnegri/peakutils/raw/f48d65a9b55f61fb65f368b75a2c53cbce132a0c/peakutils/peak.py
-	'''
-	The MIT License (MIT)
-
-	Copyright (c) 2014-2022 Lucas Hermann Negri
-
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
-
-	The above copyright notice and this permission notice shall be included in
-	all copies or substantial portions of the Software.
-
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
-	'''
+	
 	if isinstance(y, np.ndarray) and np.issubdtype(y.dtype, np.unsignedinteger):
 		raise ValueError("y must be signed")
 
@@ -235,7 +190,7 @@ def peakIndexes(y, thres=0.3, min_dist=1, thres_abs=False):
 
 		peaks = np.arange(y.size)[~rem]
 
-	return peaks	
+	return peaks
 
 
 def readcal(width):
@@ -329,7 +284,7 @@ def readcal(frameWidth):
 		print(C4)
 		'''
 		print("Generating Wavelength Data!\n\n")
-		for pixel in range(frameWidth):		
+		for pixel in range(frameWidth):
 			wavelength=((C1*pixel**3)+(C2*pixel**2)+(C3*pixel)+C4)
 			wavelength = round(wavelength,6)
 			wavelengthData.append(wavelength)
@@ -349,7 +304,7 @@ def readcal(frameWidth):
 		corr_matrix = np.corrcoef(wavelengths, predicted)
 		corr = corr_matrix[0,1]
 		R_sq = corr**2
-		 
+
 		print("R-Squared="+str(R_sq))
 
 		message = 2 #Multiwavelength cal, 3rd order poly
@@ -388,7 +343,7 @@ def writecal(clickArray):
 		wldata.append(wavelength)
 	#This try except serves two purposes
 	#first I want to write data to the caldata.txt file without quotes
-	#second it validates the data in as far as no strings were entered 
+	#second it validates the data in as far as no strings were entered
 	try:
 		wldata = [float(x) for x in wldata]
 	except:
@@ -408,16 +363,6 @@ def generateGraticule(wavelengthData):
 	low = int(round(min(wavelengthData)))   #get lowet number in list
 	high = int(round(max(wavelengthData)))  #get highest number
 	step = max(1, len(wavelengthData) // (high - low + 1))  # Ensure full screen coverage
-	#round and int these numbers so we have our range of numbers to look at
-	#give a margin of 10 at each end for good measure
-	# low = wavelengthData[0]
-	# high = wavelengthData[len(wavelengthData)-1] #get highest number
-	# low = int(round(low))-10
-	# high = int(round(high))+10
-	#print('...')
-	#print(low)
-	#print(high)
-	#print('...')
 	returndata = []
 	#find positions of every whole 10nm
 	tens = [i for i in range(0, len(wavelengthData), step) if int(wavelengthData[i]) % 10 == 0]
@@ -429,7 +374,7 @@ def generateGraticule(wavelengthData):
 			position = min(enumerate(wavelengthData), key=lambda x: abs(i - x[1]))
 			#If the difference between the target and result is <9 show the line
 			#(otherwise depending on the scale we get dozens of number either end that are close to the target)
-			if abs(i-position[1]) <1: 
+			if abs(i-position[1]) <1:
 				fifties.append(position)
 				#print(position)
 				#tens.append(position[0])
@@ -442,7 +387,7 @@ def generateGraticule(wavelengthData):
 			position = min(enumerate(wavelengthData), key=lambda x: abs(i - x[1]))
 			#If the difference between the target and result is <1 show the line
 			#(otherwise depending on the scale we get dozens of number either end that are close to the target)
-			if abs(i-position[1]) <1: 
+			if abs(i-position[1]) <1:
 				labelpos = position[0]
 				labeltxt = int(round(position[1]))
 				labeldata = [labelpos,labeltxt]
