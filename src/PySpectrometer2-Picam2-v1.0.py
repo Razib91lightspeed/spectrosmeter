@@ -202,39 +202,33 @@ while True:
     step = max(1, len(wavelengthData) // (high - low))
 
     # Clearer grid lines for major and minor
+# ✅ Corrected minor grid lines (non-overlapping, clean code)
 for i in range(frameWidth):
     if int(wavelengthData[i]) % 50 == 0:
         cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 1)
         cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i - 15, 25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
-    elif int(wavelengthData[i]) % 10 == 0:
+
+# ✅ Minor grid lines added separately (every 10 nm)
+for i in range(0, len(wavelengthData), step // 2):
+    if int(wavelengthData[i]) % 10 == 0 and int(wavelengthData[i]) % 50 != 0:
         cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
-
-        # Draw minor grid lines (every 10 nm without labels)
-    for i in range(0, len(wavelengthData), step // 2):
-        if int(
-                wavelengthData[i]) % 10 == 0 and int(
-                wavelengthData[i]) % 50 != 0:
-            cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
     # horizontal lines
 
     # Now process the intensity data and display it
     # intensity = []
-    for i in range(frameWidth):
-        if i < cols:
-            # data = bwimage[halfway,i] #pull the pixel data from the halfway mark
-            # print(type(data)) #numpy.uint8
-            # average the data of 3 rows of pixels:
-            dataminus1 = bwimage[halfway - 1, i]
-            # pull the pixel data from the halfway mark
-            datazero = bwimage[halfway, i]
-            dataplus1 = bwimage[halfway + 1, i]
-            data = (int(dataminus1) + int(datazero) + int(dataplus1)) / 3
-            intensity[i] = int(data)
-        else:
-            intensity[1] = 0
+for i in range(frameWidth):
+    if i < cols:
+        dataminus1 = bwimage[halfway - 1, i]
+        datazero = bwimage[halfway, i]
+        dataplus1 = bwimage[halfway + 1, i]
+        data = (int(dataminus1) + int(datazero) + int(dataplus1)) / 3
+        intensity[i] = int(data)
+    else:
+        intensity[i] = 0  # ✅ Fixed index for the entire graph coverage
+
 
         if holdpeaks:
             if data > intensity[i]:
