@@ -361,53 +361,32 @@ def writecal(clickArray):
 
 def generateGraticule(wavelengthData):
     """
-    Generates graticule data for a spectrometer graph.
-
-    This function identifies positions for gridlines and labels based on the wavelength data.
-    It calculates positions for every 10nm and 50nm interval to be displayed on the spectrometer graph.
-
-    Parameters:
-    - wavelengthData (list): A list of wavelength values for each pixel in the graph.
-
-    Returns:
-    - list: Contains two elements:
-        - tens: A list of pixel positions where every 10nm gridline should be drawn.
-        - fifties: A list of lists, where each sublist contains [pixel_position, wavelength] for every 50nm mark.
+    Generates graticule data for the spectrometer graph to prevent overlap.
     """
-
-    # Validate input
-    if len(wavelengthData) < 2:
-        raise ValueError("Wavelength data must contain at least two points for a valid range.")
-
-    # Get the minimum and maximum wavelength values from the data
     low = int(round(min(wavelengthData)))
     high = int(round(max(wavelengthData)))
 
-    # Prevent zero-division error by ensuring a positive step value
+    # Adjusted step to reduce clutter and overlap
     step = max(1, len(wavelengthData) // (high - low + 1))
 
-    # Initialize the return data structure
     returndata = []
 
-    # --- Calculate positions for every 10nm grid line ---
-    tens = [i for i in range(0, len(wavelengthData), step) if int(wavelengthData[i]) % 10 == 0]
+    # Vertical lines every 50nm instead of 10nm
+    tens = [i for i in range(0, len(wavelengthData), step * 5) if int(wavelengthData[i]) % 10 == 0]
     returndata.append(tens)
 
-    # --- Calculate positions for every 50nm grid line with labels ---
+    # For every 50nm (major grid lines and labels)
     fifties = []
     for i in range(low, high + 1):
         if i % 50 == 0:
-            # Find the pixel closest to the wavelength value
             position = min(enumerate(wavelengthData), key=lambda x: abs(i - x[1]))
             labelpos = position[0]
             labeltxt = int(round(position[1]))
             fifties.append([labelpos, labeltxt])
 
-    # Append the 50nm positions to the return data
     returndata.append(fifties)
-
-    # Return both 10nm and 50nm gridline data
     return returndata
+
 
 
 

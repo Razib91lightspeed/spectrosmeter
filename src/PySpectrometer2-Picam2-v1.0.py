@@ -177,19 +177,22 @@ while True:
 	#Display a graticule calibrated with cal data
 	textoffset = 12
 	# Define step before the loop
+	# Adjusted step calculation for better spacing and less clutter
 	low = int(round(min(wavelengthData)))
 	high = int(round(max(wavelengthData)))
-	step = max(1, len(wavelengthData) // (high - low + 1))
+	# Increase step size to reduce grid line density and prevent overlap
+	step = max(10, len(wavelengthData) // (high - low + 1))
+
 	#vertial lines every whole 10nm
-	for i in range(0, len(wavelengthData), step * 5):
+	for i in range(0, len(wavelengthData), step * 10):
 		cv2.line(graph, (i,15), (i, 320), (200, 200, 200), 1)
 
 	#vertical lines every whole 50nm
 	for positiondata in fifties:
-		if positiondata[1] % 50 == 0:
-			cv2.line(graph, (positiondata[0], 15),(positiondata[0], 320), (0, 0, 0), 1)
-		cv2.putText(graph, str(positiondata[1])+ 'nm', (positiondata[0] - 10, 25),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
+		if positiondata[1] % 100 == 0:
+			cv2.line(graph, (positiondata[0], 15), (positiondata[0], 320), (0, 0, 0), 1)
+			cv2.putText(graph, str(positiondata[1]) + 'nm', (positiondata[0] - 20, 30),
+				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
 
 	#horizontal lines
 	for i in range (320):
