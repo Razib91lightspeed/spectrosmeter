@@ -193,10 +193,7 @@ while True:
         		cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
 	#horizontal lines
-	for i in range (320):
-		if i>=64:
-			if i%64==0: #suppress the first line then draw the rest...
-				cv2.line(graph,(0,i),(frameWidth,i),(100,100,100),1)
+	
 
 	#Now process the intensity data and display it
 	#intensity = []
