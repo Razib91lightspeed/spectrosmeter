@@ -182,12 +182,13 @@ while True:
 	step = max(1, len(wavelengthData) // (high - low))
 
 	# Clearer grid lines for major and minor
-	for i in range(0, len(wavelengthData), step):
-    		cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)  # Minor grid lines (lighter)
+	for i in range(frameWidth):
     		if wavelengthData[i] % 50 == 0:
         		cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 2)  # Major grid lines (darker)
         		cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i - 20, 25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
+			elif int (wavelengthData[i]) % 10 ==0:
+					cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
 					# Draw minor grid lines (every 10 nm without labels)
 	for i in range(0, len(wavelengthData), step // 2):
@@ -199,15 +200,18 @@ while True:
 
 	#Now process the intensity data and display it
 	#intensity = []
-	for i in range(cols):
+	for i in range(frameWidth):
+		if i < cols:
 		#data = bwimage[halfway,i] #pull the pixel data from the halfway mark
 		#print(type(data)) #numpy.uint8
 		#average the data of 3 rows of pixels:
-		dataminus1 = bwimage[halfway-1, i]
-		datazero = bwimage[halfway,i] #pull the pixel data from the halfway mark
-		dataplus1 = bwimage[halfway+1, i]
-		data = (int(dataminus1) +int(datazero) +int(dataplus1)) / 3
-		intensity[i] = int(data) if data <= 320 else 320
+			dataminus1 = bwimage[halfway-1, i]
+			datazero = bwimage[halfway,i] #pull the pixel data from the halfway mark
+			dataplus1 = bwimage[halfway+1, i]
+			data = (int(dataminus1) +int(datazero) +int(dataplus1)) / 3
+			intensity[i] = int(data)
+		else:
+			intensity[1] = 0
 
 
 		if holdpeaks == True:
@@ -220,7 +224,7 @@ while True:
 		#waterfall....
 		#data is smoothed at this point!!!!!!
 		#create an empty array for the data
-		wdata = np.zeros([1,frameWidth,3],dtype=np.uint8)
+		wdata = np.zeros([1, frameWidth, 3], dtype=np.uint8)
 		index=0
 		for i in intensity:
 			rgb = wavelength_to_rgb(round(wavelengthData[index]))#derive the color from the wavelenthData array
