@@ -146,23 +146,26 @@ def peakIndexes(y, thres=0.3, min_dist=1, thres_abs=False):
     return peaks
 
 def readcal(width):
-    """
-    Read calibration data from a file and generate wavelength data.
-    """
     errors = 0
-    wavelengthData = np.linspace(400, 1700, num=width)
+    wavelengthData = np.linspace(400, 1700, num=width)  # Default wavelength data
     pixels = [0, 400, 800]  # Example pixel data if file is missing
     wavelengths = [400, 750, 1700]  # Example wavelength data
 
     try:
         with open('caldata.txt', 'r') as file:
             lines = file.readlines()
-            pixels = list(map(int, lines[0].strip().split(',')))
-            wavelengths = list(map(float, lines[1].strip().split(',')))
-    except:
+            if len(lines) >= 2:
+                pixels = list(map(int, lines[0].strip().split(',')))
+                wavelengths = list(map(float, lines[1].strip().split(',')))
+            else:
+                print("caldata.txt is incomplete. Using placeholder data.")
+                errors = 1
+    except FileNotFoundError:
+        print("caldata.txt not found. Using placeholder data.")
         errors = 1
-        print("Loading of Calibration data failed (missing caldata.txt or corrupted data!)")
-        print("Loading placeholder data...")
+    except Exception as e:
+        print(f"Error reading caldata.txt: {e}. Using placeholder data.")
+        errors = 1
 
     if len(pixels) == 3:
         coefficients = np.poly1d(np.polyfit(pixels, wavelengths, 2))

@@ -137,14 +137,17 @@ while True:
     graph.fill(255)
 
     textoffset = 12
-    low = int(round(min(wavelengthData)))
-    high = int(round(max(wavelengthData)))
-    step = max(1, len(wavelengthData) // (high - low))
+low = int(round(min(wavelengthData)))
+high = int(round(max(wavelengthData)))
+step = max(1, len(wavelengthData) // max(1, (high - low)))  # Ensure step is at least 1
 
-    for i in range(frameWidth):
-        if int(wavelengthData[i]) % 50 == 0:
-            cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 1)
-            cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i - 15, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
+# Debugging output
+print(f"wavelengthData: {wavelengthData}")
+print(f"low: {low}, high: {high}, step: {step}")
+
+for i in range(0, len(wavelengthData), step):
+    if int(wavelengthData[i]) % 10 == 0 and int(wavelengthData[i]) % 50 != 0:
+        cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
     for i in range(0, len(wavelengthData), step // 2):
         if int(wavelengthData[i]) % 10 == 0 and int(wavelengthData[i]) % 50 != 0:
