@@ -176,24 +176,26 @@ while True:
 
 	#Display a graticule calibrated with cal data
 	textoffset = 12
-	# Fix: Adjust the step calculation for better spacing and visibility
+	# Adjusting step size for proper grid visibility
 	low = int(round(min(wavelengthData)))
 	high = int(round(max(wavelengthData)))
-	step = max(20, len(wavelengthData) // 20)  # Increased step size for less overlap
+	step = max(1, len(wavelengthData) // (high - low))
 
-	# Vertical grid lines and labels with better spacing and non-overlapping labels
+	# Clearer grid lines for major and minor
 	for i in range(0, len(wavelengthData), step):
-    		if wavelengthData[i] % 50 == 0:  # Show labels only for major steps
-        		cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 1)
-        		cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i - 15, 25),
+    		cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)  # Minor grid lines (lighter)
+    		if wavelengthData[i] % 50 == 0:
+        		cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 2)  # Major grid lines (darker)
+        		cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i - 20, 25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
+
 					# Draw minor grid lines (every 10 nm without labels)
 	for i in range(0, len(wavelengthData), step // 2):
     		if int(wavelengthData[i]) % 10 == 0 and int(wavelengthData[i]) % 50 != 0:
         		cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
 	#horizontal lines
-	
+
 
 	#Now process the intensity data and display it
 	#intensity = []
@@ -201,11 +203,11 @@ while True:
 		#data = bwimage[halfway,i] #pull the pixel data from the halfway mark
 		#print(type(data)) #numpy.uint8
 		#average the data of 3 rows of pixels:
-		dataminus1 = bwimage[halfway-1,i]
+		dataminus1 = bwimage[halfway-1, i]
 		datazero = bwimage[halfway,i] #pull the pixel data from the halfway mark
-		dataplus1 = bwimage[halfway+1,i]
-		data = (int(dataminus1)+int(datazero)+int(dataplus1))/3
-		data = np.uint8(data)
+		dataplus1 = bwimage[halfway+1, i]
+		data = (int(dataminus1) +int(datazero) +int(dataplus1)) / 3
+		intensity[i] = int(data) if data <= 320 else 320
 
 
 		if holdpeaks == True:

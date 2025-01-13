@@ -372,7 +372,7 @@ def generateGraticule(wavelengthData):
     returndata = []
 
     # Vertical lines every 50nm instead of 10nm
-    tens = [i for i in range(0, len(wavelengthData), step * 5) if int(wavelengthData[i]) % 10 == 0]
+    tens = [i for i in range(0, len(wavelengthData), step * 10) if int(wavelengthData[i]) % 10 == 0]
     returndata.append(tens)
 
     # For every 50nm (major grid lines and labels)
