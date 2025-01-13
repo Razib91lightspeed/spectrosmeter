@@ -176,23 +176,20 @@ while True:
 
 	#Display a graticule calibrated with cal data
 	textoffset = 12
-	# Define step before the loop
-	# Adjusted step calculation for better spacing and less clutter
+	# Fix: Adjust the step calculation for better spacing and visibility
 	low = int(round(min(wavelengthData)))
 	high = int(round(max(wavelengthData)))
-	# Increase step size to reduce grid line density and prevent overlap
-	step = max(10, len(wavelengthData) // (high - low + 1))
+	step = max(10, len(wavelengthData) // 80)  # Increased step size for less overlap
 
-	#vertial lines every whole 10nm
-	for i in range(0, len(wavelengthData), step * 10):
-		cv2.line(graph, (i,15), (i, 320), (200, 200, 200), 1)
-
-	#vertical lines every whole 50nm
-	for positiondata in fifties:
-		if positiondata[1] % 100 == 0:
-			cv2.line(graph, (positiondata[0], 15), (positiondata[0], 320), (0, 0, 0), 1)
-			cv2.putText(graph, str(positiondata[1]) + 'nm', (positiondata[0] - 20, 30),
-				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1)
+	# Vertical grid lines and labels with better spacing and non-overlapping labels
+	for i in range(0, len(wavelengthData), step):
+    		if wavelengthData[i] % 50 == 0:  # Show labels only for major steps
+        		cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 1)
+        		cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i, 25),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
+    		else:
+        	# Light grey minor grid lines without labels for clarity
+        		cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
 	#horizontal lines
 	for i in range (320):
