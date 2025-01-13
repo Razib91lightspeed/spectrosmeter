@@ -179,16 +179,17 @@ while True:
 	# Fix: Adjust the step calculation for better spacing and visibility
 	low = int(round(min(wavelengthData)))
 	high = int(round(max(wavelengthData)))
-	step = max(10, len(wavelengthData) // 80)  # Increased step size for less overlap
+	step = max(20, len(wavelengthData) // 20)  # Increased step size for less overlap
 
 	# Vertical grid lines and labels with better spacing and non-overlapping labels
 	for i in range(0, len(wavelengthData), step):
     		if wavelengthData[i] % 50 == 0:  # Show labels only for major steps
         		cv2.line(graph, (i, 15), (i, 320), (0, 0, 0), 1)
-        		cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i, 25),
+        		cv2.putText(graph, f"{int(wavelengthData[i])}nm", (i - 15, 25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 0), 1)
-    		else:
-        	# Light grey minor grid lines without labels for clarity
+					# Draw minor grid lines (every 10 nm without labels)
+	for i in range(0, len(wavelengthData), step // 2):
+    		if int(wavelengthData[i]) % 10 == 0 and int(wavelengthData[i]) % 50 != 0:
         		cv2.line(graph, (i, 15), (i, 320), (200, 200, 200), 1)
 
 	#horizontal lines
